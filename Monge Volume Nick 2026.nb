@@ -1,0 +1,1254 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     50721,       1246]
+NotebookOptionsPosition[     49650,       1218]
+NotebookOutlinePosition[     50060,       1234]
+CellTagsIndexPosition[     50017,       1231]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Volume of the Monge polytope using Delannoy paths", "Title",
+ CellChangeTimes->{{3.9959128950270214`*^9, 
+  3.995912906863385*^9}},ExpressionUUID->"6dc7c2cd-730f-40e6-a070-\
+3dc95e6788c7"],
+
+Cell[CellGroupData[{
+
+Cell["Definitions and dynamic programming algorithm", "Section",
+ CellChangeTimes->{{3.9959129151100955`*^9, 3.9959129211396236`*^9}, {
+  3.9968741727043266`*^9, 
+  3.9968741814422903`*^9}},ExpressionUUID->"0e7da87b-7455-48f0-82c2-\
+f8726e63f566"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", "\n", "    ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Steps", ":", " ", "\"\<S\>\""}], " ", "=", " ", 
+     RowBox[{"(", 
+      RowBox[{"1", ",", "0"}], ")"}]}], ",", " ", 
+    RowBox[{"\"\<E\>\"", " ", "=", " ", 
+     RowBox[{"(", 
+      RowBox[{"0", ",", "1"}], ")"}]}], ",", " ", 
+    RowBox[{"\"\<D\>\"", " ", "=", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"1", ",", "1"}], ")"}], "  ", 
+       RowBox[{"(", 
+        RowBox[{"matrix", " ", "coordinates"}], ")"}], "\n", "    ", 
+       RowBox[{"A", " ", "path", " ", "from", " ", 
+        RowBox[{"(", 
+         RowBox[{"1", ",", "1"}], ")"}], " ", "to", " ", 
+        RowBox[{"(", 
+         RowBox[{"p", ",", "q"}], ")"}], " ", "is", " ", "Z"}]}], "-", 
+      RowBox[{
+      "avoiding", " ", "if", " ", "it", " ", "contains", " ", "no", " ", 
+       "contiguous", "\n", "    ", 
+       RowBox[{
+       "subpath", " ", "of", " ", "the", " ", "form", "  ", "E"}]}]}]}], ",", 
+    " ", "S", ",", "S", ",", "...", ",", 
+    RowBox[{"S", " ", 
+     RowBox[{"(", 
+      RowBox[{"k", ">=", 
+       RowBox[{"1", " ", "times"}]}], ")"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"E", ".", "\n", "\n", "    ", "This"}], " ", "file", " ", 
+      RowBox[{"provides", ":", "\n", "      ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"zAvoidingPaths", "[", 
+           RowBox[{"p", ",", "q"}], "]"}], "   ", "--"}], " ", "all", " ", 
+         "Z"}], "-", 
+        RowBox[{"avoiding", " ", "Delannoy", " ", "paths", " ", 
+         RowBox[{"(", 
+          RowBox[{"1", ",", "1"}], ")"}]}]}]}]}], "->", 
+     RowBox[{"(", 
+      RowBox[{"p", ",", "q"}], ")"}]}], ",", "\n", 
+    "                                ", 
+    RowBox[{
+     RowBox[{
+     "each", " ", "returned", " ", "as", " ", "a", " ", "list", " ", "of", 
+      " ", 
+      RowBox[{
+       RowBox[{"\"\<S\>\"", "/", "\"\<E\>\""}], "/", "\"\<D\>\""}], "\n", 
+      "      ", 
+      RowBox[{
+       RowBox[{"diag", "[", "path", "]"}], "            ", "--"}], " ", 
+      "diag", 
+      RowBox[{"(", "P", ")"}]}], " ", "=", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"#", " ", "of", " ", 
+        RowBox[{"D", "'"}], "s", "\n", "      ", 
+        RowBox[{
+         RowBox[{"vert", "[", "path", "]"}], "            ", "--"}], " ", 
+        "vert", 
+        RowBox[{"(", "P", ")"}]}], ":", " ", 
+       RowBox[{"product", " ", "over", " ", "south", " ", "segments", " ", 
+        RowBox[{"(", 
+         RowBox[{
+         "maximal", "\n", "                                ", "blocks", " ", 
+          "of", " ", 
+          RowBox[{"S", "'"}], "s", " ", "not", " ", "touching", " ", "an", 
+          " ", "E"}], ")"}], " ", "of", "\n", 
+        "                                ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"segment", " ", "length"}], " ", "+", " ", "1"}], ")"}], 
+        "\n", "      ", 
+        RowBox[{
+         RowBox[{"fact", "[", 
+          RowBox[{"path", ",", "p", ",", "q"}], "]"}], "        ", "--"}], 
+        " ", "fact", 
+        RowBox[{"(", "P", ")"}], " ", "as", " ", "defined", " ", "via", " ", 
+        RowBox[{"row", "/", "column"}], " ", "complements", "\n", "      ", 
+        RowBox[{
+         RowBox[{"Vol", "[", 
+          RowBox[{"p", ",", "q"}], "]"}], "            ", "--"}], " ", "V", 
+        RowBox[{"(", 
+         RowBox[{"p", ",", "q"}], ")"}]}]}], " ", "=", " ", 
+      RowBox[{
+       RowBox[{"Sum", " ", 
+        RowBox[{"q", "^", "diag"}], 
+        RowBox[{"(", "P", ")"}], " ", "vert", 
+        RowBox[{
+         RowBox[{"(", "P", ")"}], "/", "fact"}], 
+        RowBox[{"(", "P", ")"}], " ", "over", " ", "Z"}], "-", 
+       RowBox[{"avoiding", " ", "P"}]}]}]}], ",", "\n", 
+    "                                ", 
+    RowBox[{"brute", "-", 
+     RowBox[{"force", " ", 
+      RowBox[{"(", 
+       RowBox[{"generate", " ", "then", " ", "evaluate"}], ")"}], "\n", 
+      "      ", 
+      RowBox[{
+       RowBox[{"FastVol", "[", 
+        RowBox[{"p", ",", "q"}], "]"}], "        ", "--"}], " ", "same", " ", 
+      "V", 
+      RowBox[{"(", 
+       RowBox[{"p", ",", "q"}], ")"}]}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"via", " ", "a", " ", "polynomial"}], "-", 
+     RowBox[{
+     "time", " ", "DP", " ", "that", "\n", "                                ",
+       "never", " ", "enumerates", " ", "individual", " ", "paths"}]}]}], 
+   "\n", "*)"}], "\n", "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ClearAll", "[", 
+     RowBox[{
+     "nextState", ",", " ", "allowedMoveQ", ",", " ", "zAvoidingPaths", ",", 
+      " ", "southSegments", ",", "\n", "  ", "diag", ",", " ", "vert", ",", 
+      " ", "pathCoords", ",", " ", "fact", ",", " ", "Vol", ",", " ", 
+      "FastVol", ",", " ", "pathString", ",", " ", "showPaths"}], "]"}], 
+    ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", " ", "automaton"}]}]}]}]}], " ", "for", " ", "the", 
+      " ", "Z"}], "-", 
+     RowBox[{"avoiding", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"condition", " ", "--"}], "--"}], "--"}], "--"}], 
+       "--"}]}]}], " ", "*)"}], "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"state", " ", "=", " ", 
+      RowBox[{
+       RowBox[{"\"\<noE\>\"", "  ", ":", " ", 
+        RowBox[{
+        "no", " ", "\"\<open\>\"", " ", "E", " ", "since", " ", "the", " ", 
+         "last", " ", "D", " ", 
+         RowBox[{"(", 
+          RowBox[{"or", " ", "start"}], ")"}], "\n", "   ", "state"}]}], " ", 
+       "=", " ", 
+       RowBox[{"\"\<E\>\"", "    ", ":", " ", 
+        RowBox[{
+        "most", " ", "recent", " ", "relevant", " ", "step", " ", "is", " ", 
+         "an", " ", "open", " ", "E"}]}]}]}], ",", " ", 
+     RowBox[{
+      RowBox[{"no", " ", "S", " ", "yet", "\n", "   ", "state"}], " ", "=", 
+      " ", 
+      RowBox[{"\"\<ES\>\"", "   ", ":", " ", 
+       RowBox[{
+        RowBox[{
+        "that", " ", "open", " ", "E", " ", "has", " ", "since", " ", "been", 
+         " ", "followed", " ", "by"}], " ", ">=", 
+        RowBox[{"1", " ", 
+         RowBox[{"S", "'"}], "s", "\n", "                     ", 
+         RowBox[{"(", 
+          RowBox[{
+          "so", " ", "an", " ", "E", " ", "right", " ", "now", " ", "would", 
+           " ", "complete", " ", "E", " ", 
+           RowBox[{"S", "^", "k"}], " ", "E"}], ")"}]}]}]}]}]}], "          ",
+     "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<noE\>\"", ",", " ", "\"\<S\>\""}], "]"}], " ", "=", " ", 
+     "\"\<noE\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<noE\>\"", ",", " ", "\"\<E\>\""}], "]"}], " ", "=", " ", 
+     "\"\<E\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<noE\>\"", ",", " ", "\"\<D\>\""}], "]"}], " ", "=", " ", 
+     "\"\<noE\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<E\>\"", ",", " ", "\"\<S\>\""}], "]"}], " ", "=", " ", 
+     "\"\<ES\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<E\>\"", ",", " ", "\"\<E\>\""}], "]"}], " ", "=", " ", 
+     "\"\<E\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<E\>\"", ",", " ", "\"\<D\>\""}], "]"}], " ", "=", " ", 
+     "\"\<noE\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<ES\>\"", ",", " ", "\"\<S\>\""}], "]"}], " ", "=", " ", 
+     "\"\<ES\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<ES\>\"", ",", " ", "\"\<D\>\""}], "]"}], " ", "=", " ", 
+     "\"\<noE\>\""}], ";"}], "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"nextState", "[", 
+      RowBox[{"\"\<ES\>\"", ",", "\"\<E\>\""}], "]"}], " ", "deliberately", 
+     " ", 
+     RowBox[{"undefined", ":", " ", 
+      RowBox[{"that", " ", "move", " ", "is", " ", "forbidden"}]}]}], " ", 
+    "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"allowedMoveQ", "[", 
+      RowBox[{"state_", ",", " ", "move_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"!", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"state", " ", "===", " ", "\"\<ES\>\""}], " ", "&&", " ", 
+        RowBox[{"move", " ", "===", " ", "\"\<E\>\""}]}], ")"}]}]}], ";"}], 
+   "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", " ", "path"}]}]}]}]}], " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"generation", " ", "--"}], "--"}], "--"}], "--"}], "--"}]}], 
+    " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"zAvoidingPaths", "[", 
+      RowBox[{"p_Integer", ",", " ", "q_Integer"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "f", "}"}], ",", "\n", "   ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"f", "[", 
+          RowBox[{"i_", ",", " ", "j_", ",", " ", "state_"}], "]"}], " ", ":=",
+          " ", 
+         RowBox[{
+          RowBox[{"f", "[", 
+           RowBox[{"i", ",", " ", "j", ",", " ", "state"}], "]"}], " ", "=", 
+          "\n", "     ", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"i", " ", "==", " ", "p"}], " ", "&&", " ", 
+             RowBox[{"j", " ", "==", " ", "q"}]}], ",", "\n", "      ", 
+            RowBox[{"{", 
+             RowBox[{"{", "}"}], "}"}], ",", "\n", "      ", 
+            RowBox[{"Join", "[", "\n", "       ", 
+             RowBox[{
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{"i", " ", "<", " ", "p"}], ",", "\n", "        ", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"Prepend", "[", 
+                   RowBox[{"#", ",", " ", "\"\<S\>\""}], "]"}], " ", "&"}], 
+                 " ", "/@", " ", 
+                 RowBox[{"f", "[", 
+                  RowBox[{
+                   RowBox[{"i", " ", "+", " ", "1"}], ",", " ", "j", ",", " ", 
+                   RowBox[{"nextState", "[", 
+                    RowBox[{"state", ",", " ", "\"\<S\>\""}], "]"}]}], 
+                  "]"}]}], ",", "\n", "        ", 
+                RowBox[{"{", "}"}]}], "]"}], ",", "\n", "       ", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"j", " ", "<", " ", "q"}], " ", "&&", " ", 
+                 RowBox[{"allowedMoveQ", "[", 
+                  RowBox[{"state", ",", " ", "\"\<E\>\""}], "]"}]}], ",", 
+                "\n", "        ", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"Prepend", "[", 
+                   RowBox[{"#", ",", " ", "\"\<E\>\""}], "]"}], " ", "&"}], 
+                 " ", "/@", " ", 
+                 RowBox[{"f", "[", 
+                  RowBox[{"i", ",", " ", 
+                   RowBox[{"j", " ", "+", " ", "1"}], ",", " ", 
+                   RowBox[{"nextState", "[", 
+                    RowBox[{"state", ",", " ", "\"\<E\>\""}], "]"}]}], 
+                  "]"}]}], ",", "\n", "        ", 
+                RowBox[{"{", "}"}]}], "]"}], ",", "\n", "       ", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"i", " ", "<", " ", "p"}], " ", "&&", " ", 
+                 RowBox[{"j", " ", "<", " ", "q"}]}], ",", "\n", "        ", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"Prepend", "[", 
+                   RowBox[{"#", ",", " ", "\"\<D\>\""}], "]"}], " ", "&"}], 
+                 " ", "/@", " ", 
+                 RowBox[{"f", "[", 
+                  RowBox[{
+                   RowBox[{"i", " ", "+", " ", "1"}], ",", " ", 
+                   RowBox[{"j", " ", "+", " ", "1"}], ",", " ", 
+                   RowBox[{"nextState", "[", 
+                    RowBox[{"state", ",", " ", "\"\<D\>\""}], "]"}]}], 
+                  "]"}]}], ",", "\n", "        ", 
+                RowBox[{"{", "}"}]}], "]"}]}], "\n", "       ", "]"}]}], "\n",
+            "      ", "]"}]}]}], ";", "\n", "   ", 
+        RowBox[{"f", "[", 
+         RowBox[{"1", ",", " ", "1", ",", " ", "\"\<noE\>\""}], "]"}]}]}], 
+      "\n", "   ", "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", " ", "statistic"}]}]}]}]}], " ", "diag", 
+      RowBox[{"(", "P", ")"}]}], " ", "=", " ", 
+     RowBox[{"1", " ", "+", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"#", " ", "of", " ", 
+             RowBox[{"D", "'"}], "s"}], ")"}], " ", "--"}], "--"}], "--"}], 
+        "--"}], "--"}]}]}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"diag", "[", "path_List", "]"}], " ", ":=", "  ", 
+     RowBox[{"Count", "[", 
+      RowBox[{"path", ",", " ", "\"\<D\>\""}], "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", " ", "statistic"}]}]}]}]}], " ", "vert", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", "P", ")"}], " ", "--"}], "--"}], "--"}], "--"}], 
+      "--"}]}], " ", "*)"}], "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+      "A", " ", "\"\<south segment\>\"", " ", "is", " ", "a", " ", "maximal", 
+       " ", "block", " ", "of", " ", "consecutive", " ", 
+       RowBox[{"S", "'"}], "s", " ", "that", " ", "is", " ", "not", "\n", 
+       "   ", "adjacent", " ", "to", " ", "an", " ", "E", " ", "on", " ", 
+       "either", " ", 
+       RowBox[{"side", " ", "--"}], " ", 
+       RowBox[{"i", ".", "e", ".", " ", "bounded"}], " ", "only", " ", "by", 
+       " ", 
+       RowBox[{"D", "'"}], "s", " ", "or", " ", "the", "\n", "   ", "ends", 
+       " ", "of", " ", "the", " ", 
+       RowBox[{"path", ".", " ", "Splitting"}], " ", "on", " ", 
+       RowBox[{"D", "'"}], "s", " ", "and", " ", "keeping", " ", "the", " ", 
+       "all"}], "-", 
+      RowBox[{
+      "S", " ", "groups", " ", "finds", "\n", "   ", "exactly", " ", "these", 
+       " ", "blocks", " ", "directly"}]}], ",", " ", 
+     RowBox[{"no", " ", "auxiliary", " ", "notion", " ", 
+      RowBox[{"needed", "."}]}]}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"southSegments", "[", "path_List", "]"}], " ", ":=", "\n", "  ", 
+     RowBox[{"Select", "[", 
+      RowBox[{
+       RowBox[{"SplitBy", "[", 
+        RowBox[{"path", ",", " ", 
+         RowBox[{
+          RowBox[{"#", " ", "===", " ", "\"\<D\>\""}], " ", "&"}]}], "]"}], 
+       ",", " ", 
+       RowBox[{
+        RowBox[{"AllTrue", "[", 
+         RowBox[{"#", ",", " ", 
+          RowBox[{
+           RowBox[{"#", " ", "===", " ", "\"\<S\>\""}], " ", "&"}]}], "]"}], 
+        " ", "&"}]}], "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"vert", "[", "path_List", "]"}], " ", ":=", "\n", "  ", 
+     RowBox[{"Times", " ", "@@", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"Length", "[", "#", "]"}], " ", "+", " ", "1"}], ")"}], 
+         " ", "&"}], " ", "/@", " ", 
+        RowBox[{"southSegments", "[", "path", "]"}]}], ")"}]}]}], ";"}], "\n",
+    "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", " ", "statistic"}]}]}]}]}], " ", "fact", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", "P", ")"}], " ", "--"}], "--"}], "--"}], "--"}], 
+      "--"}]}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"pathCoords", "[", "path_List", "]"}], " ", ":=", "\n", "  ", 
+     RowBox[{"FoldList", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"#1", " ", "+", " ", 
+         RowBox[{"Switch", "[", 
+          RowBox[{"#2", ",", " ", "\"\<S\>\"", ",", " ", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", " ", "0"}], "}"}], ",", " ", "\"\<E\>\"", ",", 
+           " ", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", " ", "1"}], "}"}], ",", " ", "\"\<D\>\"", ",", 
+           " ", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", " ", "1"}], "}"}]}], "]"}]}], " ", "&"}], ",", 
+       " ", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "\n", "     ", "1"}], "}"}], ",", " ", "path"}], 
+      "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"Fast", " ", 
+      RowBox[{"version", ":", " ", 
+       RowBox[{
+        RowBox[{
+        "both", " ", "coordinates", " ", "are", " ", "individually", " ", 
+         "non"}], "-", 
+        RowBox[{
+        "decreasing", " ", "along", "\n", "   ", "the", " ", "path"}]}]}]}], 
+     ",", " ", 
+     RowBox[{
+     "so", " ", "all", " ", "points", " ", "in", " ", "a", " ", "given", " ", 
+      "row", " ", 
+      RowBox[{"(", 
+       RowBox[{"resp", ".", " ", "column"}], ")"}], " ", "are", " ", 
+      "automatically", "\n", "   ", "*", "contiguous", "*", " ", "in", " ", 
+      RowBox[{"pathCoords", " ", "--"}], " ", "no", " ", "need", " ", "to", 
+      " ", 
+      RowBox[{"Select", "/", "rescan"}], " ", "p", " ", 
+      RowBox[{"(", 
+       RowBox[{"resp", " ", "q"}], ")"}], " ", "times"}], ",", "\n", "   ", 
+     RowBox[{
+      RowBox[{
+      "a", " ", "single", " ", "SplitBy", " ", "pass", " ", "finds", " ", 
+       "all", " ", "the", " ", "groups", " ", "at", " ", 
+       RowBox[{"once", ".", " ", "Within"}], " ", "a", " ", "row"}], "-", 
+      RowBox[{"group", "\n", "   ", "the", " ", 
+       RowBox[{"j", "'"}], "s", " ", "are", " ", "increasing"}]}], ",", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"so", " ", 
+        RowBox[{"leftmost", "/", "rightmost"}]}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"First", "/", "Last"}], " ", 
+        RowBox[{"(", 
+         RowBox[{"no", " ", 
+          RowBox[{"Min", "/", "Max"}], "\n", "   ", "needed"}], ")"}]}]}], 
+      ";", " ", 
+      RowBox[{
+       RowBox[{"likewise", " ", "for", " ", "column"}], "-", 
+       RowBox[{
+        RowBox[{"groups", ".", " ", "This"}], " ", "drops", " ", "the", " ", 
+        "cost", " ", "per", " ", "path", " ", "from", "\n", "   ", "O", 
+        RowBox[{"(", 
+         RowBox[{"n", "*", 
+          RowBox[{"(", 
+           RowBox[{"p", "+", "q"}], ")"}]}], ")"}], " ", "to", " ", "O", 
+        RowBox[{
+         RowBox[{"(", "n", ")"}], "."}]}]}]}]}], " ", "*)"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"fact", "[", 
+      RowBox[{"path_List", ",", " ", "p_Integer", ",", " ", "q_Integer"}], 
+      "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", "\n", "   ", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"coords", " ", "=", " ", 
+          RowBox[{"pathCoords", "[", "path", "]"}]}], ",", " ", "rowGroups", 
+         ",", " ", "colGroups"}], "}"}], ",", "\n", "   ", 
+       RowBox[{
+        RowBox[{"rowGroups", " ", "=", " ", 
+         RowBox[{"SplitBy", "[", 
+          RowBox[{"coords", ",", " ", "First"}], "]"}]}], ";", "\n", "   ", 
+        RowBox[{"colGroups", " ", "=", " ", 
+         RowBox[{"SplitBy", "[", 
+          RowBox[{"coords", ",", " ", "Last"}], "]"}]}], ";", "\n", "   ", 
+        RowBox[{
+         RowBox[{"Times", " ", "@@", " ", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"First", "[", "#", "]"}], "[", 
+                  RowBox[{"[", "2", "]"}], "]"}], " ", "-", " ", "1"}], ")"}],
+                "!"}], " ", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"q", " ", "-", " ", 
+                 RowBox[{
+                  RowBox[{"Last", "[", "#", "]"}], "[", 
+                  RowBox[{"[", "2", "]"}], "]"}]}], ")"}], "!"}]}], " ", 
+             "&"}], " ", "/@", " ", "rowGroups"}], ")"}]}], " ", "*", "\n", 
+         "    ", 
+         RowBox[{"Times", " ", "@@", " ", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"First", "[", "#", "]"}], "[", 
+                  RowBox[{"[", "1", "]"}], "]"}], " ", "-", " ", "1"}], ")"}],
+                "!"}], " ", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"p", " ", "-", " ", 
+                 RowBox[{
+                  RowBox[{"Last", "[", "#", "]"}], "[", 
+                  RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "!"}]}], " ", 
+             "&"}], " ", "/@", " ", "colGroups"}], ")"}]}]}]}]}], "\n", "   ",
+       "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", " ", "the"}]}]}]}]}], " ", "volume", " ", "V", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"p", ",", "q"}], ")"}], " ", "--"}], "--"}], "--"}], 
+       "--"}], "--"}]}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Vol", "[", 
+      RowBox[{"p_Integer", ",", " ", "q_Integer"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"paths", " ", "=", " ", 
+         RowBox[{"zAvoidingPaths", "[", 
+          RowBox[{"p", ",", " ", "q"}], "]"}]}], "}"}], ",", "\n", "   ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"1", "/", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"p", "^", "q"}], " ", "*", " ", 
+            RowBox[{"q", "^", 
+             RowBox[{"(", 
+              RowBox[{"p", "-", "1"}], ")"}]}]}], ")"}]}], ")"}], "*", 
+        RowBox[{"Sum", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"q", "^", 
+            RowBox[{"diag", "[", "path", "]"}]}], "*", 
+           RowBox[{
+            RowBox[{"vert", "[", "path", "]"}], "/", 
+            RowBox[{"fact", "[", 
+             RowBox[{"path", ",", " ", "p", ",", " ", "q"}], "]"}]}]}], ",", 
+          " ", 
+          RowBox[{"{", 
+           RowBox[{"path", ",", " ", "paths"}], "}"}]}], "]"}]}]}], "\n", 
+      "   ", "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", " ", "fast"}]}]}]}]}], " ", "DP", " ", "for", " ", 
+      "V", 
+      RowBox[{"(", 
+       RowBox[{"p", ",", "q"}], ")"}]}], ":", " ", 
+     RowBox[{"no", " ", "path", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"enumeration", " ", "--"}], "--"}], "--"}], "--"}], 
+       "--"}]}]}], " ", "*)"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"State", " ", "at", " ", "position", " ", 
+        RowBox[{"(", 
+         RowBox[{"i", ",", "j"}], ")"}]}], ":", " ", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"colEntry", ",", " ", "rowEntry", ",", " ", "autState"}], 
+         "}"}], " ", "where", "\n", "     ", "colEntry"}]}], " ", "=", " ", 
+      RowBox[{
+       RowBox[{
+       "column", " ", "at", " ", "which", " ", "the", " ", "path", " ", 
+        "entered", " ", "the", " ", "CURRENT", " ", "row", "\n", "     ", 
+        "rowEntry"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{
+        "row", " ", "at", " ", "which", " ", "the", " ", "path", " ", 
+         "entered", " ", "the", " ", "CURRENT", " ", "column", "\n", "   ", 
+         "Both", " ", "coordinates", " ", "are", " ", "non"}], "-", 
+        RowBox[{"decreasing", " ", "along", " ", "the", " ", "path"}]}]}]}], 
+     ",", " ", 
+     RowBox[{"so", " ", "a", " ", 
+      RowBox[{"row", "'"}], "s", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"resp", ".", "\n", "   ", 
+         RowBox[{"column", "'"}]}], "s"}], ")"}], " ", "visited", " ", 
+      "cells", " ", "are", " ", "exactly", " ", "the", " ", "interval", " ", 
+      "between", " ", "its", " ", "entry", "\n", "   ", "point", " ", "and", 
+      " ", "wherever", " ", "the", " ", "path", " ", "currently", " ", 
+      RowBox[{"is", " ", "--"}], " ", "which", " ", "means", " ", 
+      RowBox[{"a_i", "!"}], 
+      RowBox[{"b_i", "!"}], " ", 
+      RowBox[{"(", 
+       RowBox[{"resp", "\n", "   ", 
+        RowBox[{"c_j", "!"}], 
+        RowBox[{"d_j", "!"}]}], ")"}], " ", "can", " ", "be", " ", 
+      "finalized", " ", "and", " ", "multiplied", " ", "in", " ", "the", " ", 
+      "instant", " ", "the", " ", "path", "\n", "   ", "*", "leaves", "*", 
+      " ", "that", " ", "row", " ", 
+      RowBox[{"(", 
+       RowBox[{"resp", " ", "column"}], ")"}]}], ",", " ", 
+     RowBox[{
+     "without", " ", "knowing", " ", "the", " ", "rest", " ", "of", " ", 
+      "the", " ", 
+      RowBox[{"path", ".", "\n", "   ", "Likewise"}]}], ",", " ", 
+     RowBox[{
+      RowBox[{"while", " ", "autState"}], "==", 
+      RowBox[{"\"\<noE\>\"", " ", "the", " ", "current", " ", 
+       RowBox[{"S", "/", "E"}], " ", "segment", " ", "is", " ", "pure", " ", 
+       "S", " ", "and", "\n", "   ", "rowEntry", " ", "has", " ", "been", " ",
+        "frozen", " ", "since", " ", "it", " ", "started"}]}], ",", " ", 
+     RowBox[{
+      RowBox[{
+      "so", " ", "its", " ", "length", " ", "is", " ", "simply", "\n", "   ", 
+       "i"}], "-", 
+      RowBox[{
+       RowBox[{"rowEntry", " ", "--"}], " ", "no", " ", "extra", " ", "state",
+        " ", "needed", " ", "to", " ", "get", " ", "vert", 
+       RowBox[{"(", "P", ")"}], " ", "right", " ", 
+       RowBox[{"either", ".", "\n", "   ", 
+        RowBox[{"memo", "[", 
+         RowBox[{"{", 
+          RowBox[{"i", ",", "j"}], "}"}], "]"}]}], " ", "is", " ", "an", " ", 
+       "Association", " ", "from", " ", 
+       RowBox[{"{", 
+        RowBox[{"colEntry", ",", "rowEntry", ",", "autState"}], "}"}], " ", 
+       "to", " ", "the", "\n", "   ", "sum", " ", "of", " ", "weights", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"q", "^", 
+            RowBox[{"{", 
+             RowBox[{"#D", " ", "so", " ", "far"}], "}"}]}], " ", "*", " ", 
+           "vert"}], "-", 
+          RowBox[{"contributions", " ", "*", " ", "fact"}], "-", 
+          "contributions"}], ",", "\n", "   ", 
+         RowBox[{"from", " ", "everything", " ", "already", " ", "closed"}]}],
+         ")"}], " ", "of", " ", "all", " ", "partial", " ", "paths", " ", 
+       "reaching", " ", "that", "\n", "   ", 
+       RowBox[{"state", ".", " ", "Processing"}], " ", 
+       RowBox[{"(", 
+        RowBox[{"i", ",", "j"}], ")"}], " ", "in", " ", "row"}], "-", 
+      RowBox[{"major", " ", "order", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"i", " ", "outer"}], ",", " ", 
+         RowBox[{"j", " ", "inner"}]}], ")"}], " ", "is", " ", "a", "\n", 
+       "   ", "valid", " ", "topological", " ", "order", " ", "for", " ", 
+       "the", " ", 
+       RowBox[{
+        RowBox[{"S", "/", "E"}], "/", "D"}], " ", "transitions"}]}], ",", " ", 
+     RowBox[{
+     "so", " ", "a", " ", "single", " ", "forward", "\n", "   ", "sweep", " ", 
+      RowBox[{"suffices", "."}]}]}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"FastVol", "[", 
+      RowBox[{"p_Integer", ",", " ", "q_Integer"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", "\n", "   ", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "memo", ",", " ", "push", ",", " ", "sub", ",", " ", "colEntry", ",", 
+         " ", "rowEntry", ",", " ", "autState", ",", " ", "w", ",", " ", 
+         "rowFactor", ",", " ", "colFactor", ",", "\n", "    ", "vertFactor", 
+         ",", " ", "newAutState", ",", " ", "total"}], "}"}], ",", "\n", "\n",
+        "   ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"push", "[", 
+          RowBox[{"target_", ",", " ", "stateKey_", ",", " ", "amount_"}], 
+          "]"}], " ", ":=", " ", 
+         RowBox[{"Module", "[", 
+          RowBox[{
+           RowBox[{"{", "s", "}"}], ",", "\n", "     ", 
+           RowBox[{
+            RowBox[{"s", " ", "=", " ", 
+             RowBox[{"Lookup", "[", 
+              RowBox[{"memo", ",", " ", 
+               RowBox[{"Key", "[", "target", "]"}], ",", " ", 
+               RowBox[{"Association", "[", "]"}]}], "]"}]}], ";", "\n", 
+            "     ", 
+            RowBox[{
+             RowBox[{"s", "[", "stateKey", "]"}], " ", "=", " ", 
+             RowBox[{
+              RowBox[{"Lookup", "[", 
+               RowBox[{"s", ",", " ", 
+                RowBox[{"Key", "[", "stateKey", "]"}], ",", " ", "0"}], "]"}],
+               " ", "+", " ", "amount"}]}], ";", "\n", "     ", 
+            RowBox[{
+             RowBox[{"memo", "[", "target", "]"}], " ", "=", " ", "s"}], 
+            ";"}]}], "\n", "     ", "]"}]}], ";", "\n", "\n", "   ", 
+        RowBox[{"memo", " ", "=", " ", 
+         RowBox[{"Association", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"1", ",", " ", "1"}], "}"}], " ", "->", " ", 
+           RowBox[{"Association", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"1", ",", " ", "1", ",", " ", "\"\<noE\>\""}], "}"}], 
+             " ", "->", " ", "1"}], "]"}]}], "]"}]}], ";", "\n", "\n", "   ", 
+        RowBox[{"Do", "[", "\n", "    ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Do", "[", "\n", "     ", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"sub", " ", "=", " ", 
+               RowBox[{"Lookup", "[", 
+                RowBox[{"memo", ",", " ", 
+                 RowBox[{"Key", "[", 
+                  RowBox[{"{", 
+                   RowBox[{"i", ",", " ", "j"}], "}"}], "]"}], ",", " ", 
+                 RowBox[{"Association", "[", "]"}]}], "]"}]}], ";", "\n", 
+              "     ", 
+              RowBox[{"Do", "[", "\n", "      ", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"{", 
+                   RowBox[{
+                   "colEntry", ",", " ", "rowEntry", ",", " ", "autState"}], 
+                   "}"}], " ", "=", " ", "state"}], ";", "\n", "      ", 
+                 RowBox[{"w", " ", "=", " ", 
+                  RowBox[{"sub", "[", "state", "]"}]}], ";", "\n", "\n", 
+                 "      ", 
+                 RowBox[{"(*", " ", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"S", ":", " ", 
+                    RowBox[{"leaves", " ", "row", " ", "i"}]}], " ", "->", 
+                    " ", 
+                    RowBox[{"finalize", " ", 
+                    RowBox[{"a_i", "!"}], " ", 
+                    RowBox[{
+                    RowBox[{"b_i", "!"}], ".", " ", "fact"}], 
+                    RowBox[{"(", "P", ")"}], " ", "is", " ", "a", " ", 
+                    "DENOMINATOR", " ", "in", "\n", "         ", "V", 
+                    RowBox[{"(", 
+                    RowBox[{"p", ",", "q"}], ")"}]}]}], ",", " ", 
+                   RowBox[{
+                   "so", " ", "we", " ", "divide", " ", "it", " ", "in"}], 
+                   ",", " ", 
+                   RowBox[{"not", " ", 
+                    RowBox[{"multiply", "."}]}]}], " ", "*)"}], "\n", 
+                 "      ", 
+                 RowBox[{"If", "[", 
+                  RowBox[{
+                   RowBox[{"i", " ", "<", " ", "p"}], ",", "\n", "       ", 
+                   RowBox[{
+                    RowBox[{"rowFactor", " ", "=", " ", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"colEntry", " ", "-", " ", "1"}], ")"}], "!"}], "  ", 
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"q", " ", "-", " ", "j"}], ")"}], "!"}]}]}], ";", 
+                    "\n", "       ", 
+                    RowBox[{"newAutState", " ", "=", " ", 
+                    RowBox[{"nextState", "[", 
+                    RowBox[{"autState", ",", " ", "\"\<S\>\""}], "]"}]}], ";",
+                     "\n", "       ", 
+                    RowBox[{"push", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"i", " ", "+", " ", "1"}], ",", " ", "j"}], "}"}],
+                     ",", " ", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    "j", ",", " ", "rowEntry", ",", " ", "newAutState"}], 
+                    "}"}], ",", " ", 
+                    RowBox[{"w", "/", "rowFactor"}]}], "]"}], ";"}]}], "\n", 
+                  "       ", "]"}], ";", "\n", "\n", "      ", 
+                 RowBox[{"(*", " ", 
+                  RowBox[{
+                   RowBox[{"E", ":", " ", 
+                    RowBox[{"leaves", " ", "column", " ", "j"}]}], " ", "->", 
+                   " ", 
+                   RowBox[{"finalize", " ", 
+                    RowBox[{"c_j", "!"}], " ", 
+                    RowBox[{"d_j", "!"}], " ", 
+                    RowBox[{"(", 
+                    RowBox[{"divide", " ", "it", " ", "in"}], ")"}]}]}], " ", 
+                  "*)"}], "\n", "      ", 
+                 RowBox[{"If", "[", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"j", " ", "<", " ", "q"}], " ", "&&", " ", 
+                    RowBox[{"allowedMoveQ", "[", 
+                    RowBox[{"autState", ",", " ", "\"\<E\>\""}], "]"}]}], ",",
+                    "\n", "       ", 
+                   RowBox[{
+                    RowBox[{"colFactor", " ", "=", " ", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"rowEntry", " ", "-", " ", "1"}], ")"}], "!"}], "  ", 
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"p", " ", "-", " ", "i"}], ")"}], "!"}]}]}], ";", 
+                    "\n", "       ", 
+                    RowBox[{"newAutState", " ", "=", " ", 
+                    RowBox[{"nextState", "[", 
+                    RowBox[{"autState", ",", " ", "\"\<E\>\""}], "]"}]}], ";",
+                     "\n", "       ", 
+                    RowBox[{"push", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"i", ",", " ", 
+                    RowBox[{"j", " ", "+", " ", "1"}]}], "}"}], ",", " ", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    "colEntry", ",", " ", "i", ",", " ", "newAutState"}], 
+                    "}"}], ",", " ", 
+                    RowBox[{"w", "/", "colFactor"}]}], "]"}], ";"}]}], "\n", 
+                  "       ", "]"}], ";", "\n", "\n", "      ", 
+                 RowBox[{"(*", " ", 
+                  RowBox[{
+                   RowBox[{"D", ":", " ", 
+                    RowBox[{
+                    "leaves", " ", "both", " ", "row", " ", "i", " ", "and", 
+                    " ", "column", " ", "j", " ", 
+                    RowBox[{"(", 
+                    RowBox[{"divide", " ", "both", " ", "in"}], ")"}]}]}], 
+                   ",", " ", 
+                   RowBox[{
+                   "closes", " ", "the", "\n", "         ", "current", " ", 
+                    "segment", " ", "since", " ", "last", " ", "D", " ", 
+                    RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{"vert", 
+                    RowBox[{"(", "P", ")"}], " ", 
+                    RowBox[{"contribution", " ", "--"}], " ", "multiply"}], 
+                    ",", "\n", "         ", 
+                    RowBox[{"since", " ", "vert", 
+                    RowBox[{"(", "P", ")"}], " ", "IS", " ", "a", " ", 
+                    "numerator", " ", 
+                    RowBox[{"factor", " ", "--"}], " ", "iff", " ", "it", " ",
+                     "was", " ", "pure", " ", "S"}]}], ")"}]}], ",", " ", 
+                   RowBox[{
+                   "and", "\n", "         ", "contributes", " ", "one", " ", 
+                    "more", " ", "D", " ", "to", " ", "diag", 
+                    RowBox[{"(", "P", ")"}], " ", 
+                    RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{"multiply", " ", "by", " ", "q"}], ",", " ", 
+                    RowBox[{"also", " ", "numerator"}]}], ")"}]}]}], " ", 
+                  "*)"}], "\n", "      ", 
+                 RowBox[{"If", "[", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"i", " ", "<", " ", "p"}], " ", "&&", " ", 
+                    RowBox[{"j", " ", "<", " ", "q"}]}], ",", "\n", "       ", 
+                   RowBox[{
+                    RowBox[{"rowFactor", " ", "=", " ", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"colEntry", " ", "-", " ", "1"}], ")"}], "!"}], "  ", 
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"q", " ", "-", " ", "j"}], ")"}], "!"}]}]}], ";", 
+                    "\n", "       ", 
+                    RowBox[{"colFactor", " ", "=", " ", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"rowEntry", " ", "-", " ", "1"}], ")"}], "!"}], "  ", 
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"p", " ", "-", " ", "i"}], ")"}], "!"}]}]}], ";", 
+                    "\n", "       ", 
+                    RowBox[{"vertFactor", " ", "=", " ", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"autState", " ", "===", " ", "\"\<noE\>\""}], " ",
+                     "&&", " ", 
+                    RowBox[{
+                    RowBox[{"i", " ", "-", " ", "rowEntry"}], " ", ">", " ", 
+                    "0"}]}], ",", " ", 
+                    RowBox[{
+                    "i", " ", "-", " ", "rowEntry", " ", "+", " ", "1"}], ",",
+                     " ", "1"}], "]"}]}], ";", "\n", "       ", 
+                    RowBox[{"push", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"i", " ", "+", " ", "1"}], ",", " ", 
+                    RowBox[{"j", " ", "+", " ", "1"}]}], "}"}], ",", " ", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"j", " ", "+", " ", "1"}], ",", " ", 
+                    RowBox[{"i", " ", "+", " ", "1"}], ",", " ", 
+                    "\"\<noE\>\""}], "}"}], ",", " ", 
+                    RowBox[{"w", "*", "vertFactor", "*", 
+                    RowBox[{"q", "/", 
+                    RowBox[{"(", 
+                    RowBox[{"rowFactor", "*", "colFactor"}], ")"}]}]}]}], 
+                    "]"}], ";"}]}], "\n", "       ", "]"}], ";"}], "\n", 
+                "      ", ",", "\n", "      ", 
+                RowBox[{"{", 
+                 RowBox[{"state", ",", " ", 
+                  RowBox[{"Keys", "[", "sub", "]"}]}], "}"}]}], "]"}], ";"}], 
+             "\n", "     ", ",", "\n", "     ", 
+             RowBox[{"{", 
+              RowBox[{"j", ",", " ", "1", ",", " ", "q"}], "}"}]}], "]"}], 
+           ";"}], "\n", "    ", ",", "\n", "    ", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", " ", "1", ",", " ", "p"}], "}"}]}], "]"}], ";", 
+        "\n", "\n", "   ", 
+        RowBox[{"(*", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"finalize", " ", "the", " ", "still"}], "-", 
+           RowBox[{"open", " ", "last", " ", "row"}]}], ",", " ", 
+          RowBox[{"last", " ", "column"}], ",", " ", 
+          RowBox[{
+           RowBox[{"and", " ", "last", " ", "segment"}], ";", "\n", "      ", 
+           RowBox[{"again", " ", "divide", " ", "by", " ", "the", " ", "fact", 
+            RowBox[{"(", "P", ")"}], " ", "pieces"}]}], ",", " ", 
+          RowBox[{"multiply", " ", "by", " ", "the", " ", "vert", 
+           RowBox[{"(", "P", ")"}], " ", "piece"}]}], " ", "*)"}], "\n", 
+        "   ", 
+        RowBox[{"sub", " ", "=", " ", 
+         RowBox[{"Lookup", "[", 
+          RowBox[{"memo", ",", " ", 
+           RowBox[{"Key", "[", 
+            RowBox[{"{", 
+             RowBox[{"p", ",", " ", "q"}], "}"}], "]"}], ",", " ", 
+           RowBox[{"Association", "[", "]"}]}], "]"}]}], ";", "\n", "   ", 
+        RowBox[{"total", " ", "=", " ", "0"}], ";", "\n", "   ", 
+        RowBox[{"Do", "[", "\n", "    ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"colEntry", ",", " ", "rowEntry", ",", " ", "autState"}],
+              "}"}], " ", "=", " ", "state"}], ";", "\n", "    ", 
+           RowBox[{"w", " ", "=", " ", 
+            RowBox[{"sub", "[", "state", "]"}]}], ";", "\n", "    ", 
+           RowBox[{"rowFactor", " ", "=", " ", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"colEntry", " ", "-", " ", "1"}], ")"}], "!"}]}], ";", 
+           "\n", "    ", 
+           RowBox[{"colFactor", " ", "=", " ", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"rowEntry", " ", "-", " ", "1"}], ")"}], "!"}]}], ";", 
+           "\n", "    ", 
+           RowBox[{"vertFactor", " ", "=", " ", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"autState", " ", "===", " ", "\"\<noE\>\""}], " ", "&&",
+                " ", 
+               RowBox[{
+                RowBox[{"p", " ", "-", " ", "rowEntry"}], " ", ">", " ", 
+                "0"}]}], ",", " ", 
+              RowBox[{"p", " ", "-", " ", "rowEntry", " ", "+", " ", "1"}], 
+              ",", " ", "1"}], "]"}]}], ";", "\n", "    ", 
+           RowBox[{"total", " ", "+=", " ", 
+            RowBox[{"w", "*", 
+             RowBox[{"vertFactor", "/", 
+              RowBox[{"(", 
+               RowBox[{"rowFactor", "*", "colFactor"}], ")"}]}]}]}], ";"}], 
+          "\n", "    ", ",", "\n", "    ", 
+          RowBox[{"{", 
+           RowBox[{"state", ",", " ", 
+            RowBox[{"Keys", "[", "sub", "]"}]}], "}"}]}], "]"}], ";", "\n", 
+        "\n", "   ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"1", "/", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"p", "^", "q"}], " ", "*", " ", 
+             RowBox[{"q", "^", 
+              RowBox[{"(", 
+               RowBox[{"p", "-", "1"}], ")"}]}]}], ")"}]}], ")"}], "*", 
+         "total"}]}]}], "\n", "   ", "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", " ", "convenience"}]}]}]}]}], " ", "/", " ", 
+      "display"}], " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"helpers", " ", "--"}], "--"}], "--"}], "--"}], "--"}]}], 
+    " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"pathString", "[", "path_List", "]"}], " ", ":=", " ", 
+     RowBox[{"StringJoin", "[", "path", "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"showPaths", "[", 
+      RowBox[{"p_Integer", ",", " ", "q_Integer"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"paths", " ", "=", " ", 
+         RowBox[{"zAvoidingPaths", "[", 
+          RowBox[{"p", ",", " ", "q"}], "]"}]}], "}"}], ",", "\n", "   ", 
+       RowBox[{"Grid", "[", "\n", "    ", 
+        RowBox[{
+         RowBox[{"Prepend", "[", "\n", "     ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"pathString", "[", "#", "]"}], ",", " ", 
+               RowBox[{"diag", "[", "#", "]"}], ",", " ", 
+               RowBox[{"vert", "[", "#", "]"}], ",", " ", 
+               RowBox[{"fact", "[", 
+                RowBox[{"#", ",", " ", "p", ",", " ", "q"}], "]"}]}], "}"}], 
+             " ", "&"}], " ", "/@", " ", "paths"}], ",", "\n", "     ", 
+           RowBox[{"{", 
+            RowBox[{
+            "\"\<path\>\"", ",", " ", "\"\<diag\>\"", ",", " ", 
+             "\"\<vert\>\"", ",", " ", "\"\<fact\>\""}], "}"}]}], "\n", 
+          "     ", "]"}], ",", "\n", "    ", 
+         RowBox[{"Frame", " ", "->", " ", "All"}], ",", " ", 
+         RowBox[{"Alignment", " ", "->", " ", "Left"}]}], "\n", "    ", 
+        "]"}]}], "\n", "   ", "]"}]}], ";"}]}]}]], "Code",
+ CellChangeTimes->{{3.995912940299337*^9, 3.9959129510216055`*^9}, {
+   3.995912997208784*^9, 3.995913003853901*^9}, {3.995913034636592*^9, 
+   3.995913111015896*^9}, {3.995913142987141*^9, 3.9959133152328196`*^9}, 
+   3.9959133482575607`*^9, {3.9959133807279987`*^9, 3.9959134605073104`*^9}, {
+   3.9959134934558353`*^9, 3.9959135614456673`*^9}, {3.9959137519998493`*^9, 
+   3.995913777617151*^9}, {3.995913860907904*^9, 3.99591388748711*^9}, {
+   3.995914016663806*^9, 3.9959140167575736`*^9}},
+ CellLabel->
+  "In[691]:=",ExpressionUUID->"a43f7624-30d2-4c03-b4b5-4aa9fba03943"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Notebook", "Section",
+ CellChangeTimes->{{3.9959136138010197`*^9, 
+  3.995913616648411*^9}},ExpressionUUID->"d77a1e22-2332-4e9e-9c0e-\
+97f651d07c84"],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"FastVol", "[", 
+      RowBox[{"p", ",", "q"}], "]"}], " ", "computes", " ", "the", " ", 
+     "normalized", " ", "volume", " ", "of", " ", "the", " ", "p"}], "-", 
+    "by", "-", 
+    RowBox[{"q", " ", "Monge", " ", "polytope"}]}], ",", " ", 
+   RowBox[{
+    RowBox[{
+    "using", " ", "the", " ", "above", " ", "implementation", " ", "of", " ", 
+     "the", " ", "Delannoy", " ", "path", " ", "formula", " ", "from", " ", 
+     "Erickson"}], "-", 
+    RowBox[{"Jones", " ", "2026"}]}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.9968743269408174`*^9, 
+  3.996874399112383*^9}},ExpressionUUID->"5f3669c9-8547-4307-9dd4-\
+b7170b59232b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FastVol", "[", 
+  RowBox[{"20", ",", "20"}], "]"}]], "Input",
+ CellChangeTimes->{{3.995913641121881*^9, 3.9959136438403115`*^9}, {
+  3.995914033190032*^9, 3.9959140570121045`*^9}, {3.995914109528816*^9, 
+  3.9959141342456493`*^9}, {3.9959141760696793`*^9, 3.995914176634514*^9}, {
+  3.99592266876034*^9, 3.9959226911334715`*^9}, {3.9959946103932757`*^9, 
+  3.9959946104578395`*^9}, {3.9959946411707115`*^9, 3.9959946444836717`*^9}, {
+  3.995994691318661*^9, 3.995994720491101*^9}, {3.995994766960661*^9, 
+  3.995994779635888*^9}, {3.9959948187359505`*^9, 3.9959948211787453`*^9}, {
+  3.9960137454237595`*^9, 3.99601374619854*^9}, {3.996013785633445*^9, 
+  3.996013785738124*^9}, {3.996086188942835*^9, 3.9960861893158116`*^9}, {
+  3.9960862205666966`*^9, 3.9960862328366084`*^9}, {3.996874268458751*^9, 
+  3.996874268820263*^9}, {3.996874406835466*^9, 3.99687442835541*^9}},
+ CellLabel->
+  "In[715]:=",ExpressionUUID->"6a5395ff-1ea2-4616-9c7b-4dbbd0920b84"],
+
+Cell[BoxData[
+ RowBox[{"38861702757053130957485202466167460050998571275040959669704214011967\
+243601840392137397806279926954076201418610385067695077941831629976791", "/", 
+  "392242090895689853657391334064326443974120184632179210695263581458956067160\
+239146696586913114285173303896567602557630890550063865153072281273471781476494\
+640060381214524763128273241644728900175925537418235539922818398894601973185553\
+938121356819285845634741830937427352290462325394987039901118966042078706302738\
+317812111052007374781132623640349837052438239672506681546949275854571777603174\
+432075379860361564498274598306268772725209805048603023083536227593598232702662\
+372964412026002635552716303724931408376616429787870605092265728670154874985381\
+888000000000000000000000000000000000000000000000000000000000000000000000000000\
+00000000000000000000000000000000000000000000000000000000000000000000000000000"\
+}]], "Output",
+ CellChangeTimes->{{3.9960861766098566`*^9, 3.996086190387718*^9}, {
+   3.996086224187129*^9, 3.9960862335487328`*^9}, 3.9960862963338466`*^9, 
+   3.996874306631631*^9, {3.996874410068005*^9, 3.996874429474902*^9}},
+ CellLabel->
+  "Out[715]=",ExpressionUUID->"0e9d2a4d-ab7f-439e-b977-361730acecd2"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1069.5, 642.},
+WindowMargins->{{0.375, Automatic}, {Automatic, 0.375}},
+FrontEndVersion->"13.1 for Microsoft Windows (64-bit) (August 22, 2022)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"391e56ae-7423-43e7-a6e6-ebce3ec88f31"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 194, 3, 98, "Title",ExpressionUUID->"6dc7c2cd-730f-40e6-a070-3dc95e6788c7"],
+Cell[CellGroupData[{
+Cell[799, 29, 247, 4, 67, "Section",ExpressionUUID->"0e7da87b-7455-48f0-82c2-f8726e63f566"],
+Cell[1049, 35, 45428, 1112, 3634, "Code",ExpressionUUID->"a43f7624-30d2-4c03-b4b5-4aa9fba03943"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[46514, 1152, 155, 3, 53, "Section",ExpressionUUID->"d77a1e22-2332-4e9e-9c0e-97f651d07c84"],
+Cell[46672, 1157, 724, 18, 48, "Input",ExpressionUUID->"5f3669c9-8547-4307-9dd4-b7170b59232b"],
+Cell[CellGroupData[{
+Cell[47421, 1179, 981, 15, 28, "Input",ExpressionUUID->"6a5395ff-1ea2-4616-9c7b-4dbbd0920b84"],
+Cell[48405, 1196, 1205, 17, 166, "Output",ExpressionUUID->"0e9d2a4d-ab7f-439e-b977-361730acecd2"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
